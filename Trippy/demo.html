@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weather Search</title>
+
+  <!-- Fonts + Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Dancing+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="demo.css" />
+</head>
+<body>
+
+  <!-- HERO SECTION -->
+  <header class="hero-section">
+    <nav class="navbar">
+      <div class="logo">Trippy</div>
+      <ul class="nav-links">
+        <li><a href="#" class="active">Home</a></li>
+        <li><a href="#">Tips</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Popular places</a></li>
+      </ul>
+    </nav>
+
+    <div class="hero-content">
+      <h1>EXPLORE&nbsp;&nbsp;THE DESTINY</h1>
+      <p class="subtitle">Know the skies before you fly</p>
+      <a href="#searchArea" class="cta-btn">See the weather</a>
+    </div>
+  </header>
+
+  <!-- TAGLINE -->
+  <h2 class="subtitle-2">“Your Journey Starts with the Perfect Weather”</h2>
+
+  <!-- MAIN SECTION -->
+  <section id="searchArea" class="box-container">
+
+    <!-- SEARCH FORM -->
+    <div class="search-wrapper">
+      <form class="search-box" id="weatherForm">
+        <div class="input-wrapper">
+          <input id="stateInput" list="stateList" placeholder="Select a state" required />
+        </div>
+        <div class="input-wrapper">
+          <input id="regionInput" list="regionList" placeholder="Select a region" required />
+        </div>
+        <div class="input-wrapper">
+          <input id="placeInput" list="placeList" placeholder="Select a place" required />
+        </div>
+        <div class="input-wrapper">
+          <input type="date" id="dateSelect" required />
+          <i class="fas fa-calendar-day"></i>
+        </div>
+        <button class="neo-btn" type="submit">Get Weather</button>
+      </form>
+    </div>
+
+    <!-- WEATHER CARD -->
+    <div class="weather-box">
+      <div class="weather-card">
+        <h3 class="city">City, Country</h3>
+        <div class="main-info">
+          <div class="left">
+            <img src="https://openweathermap.org/img/wn/02d@2x.png" alt="icon" class="big-icon" />
+            <div class="temp-now">--<span class="unit">°C</span></div>
+          </div>
+          <ul class="right">
+            <li><span>Wind Speed :</span> <span class="wind">--</span></li>
+            <li><span>Precipitation :</span> <span class="precip">--</span></li>
+            <li><span>Pressure :</span> <span class="pressure">--</span></li>
+          </ul>
+        </div>
+        <p class="condition">--</p>
+        <!-- Forecast section (static for now) -->
+        <div class="forecast-strip">
+          <div class="day"><span class="dname">MON</span><img src="https://openweathermap.org/img/wn/03d.png"/><span class="dtemp">--</span></div>
+          <div class="day"><span class="dname">TUE</span><img src="https://openweathermap.org/img/wn/01d.png"/><span class="dtemp">--</span></div>
+          <div class="day"><span class="dname">WED</span><img src="https://openweathermap.org/img/wn/10d.png"/><span class="dtemp">--</span></div>
+          <div class="day"><span class="dname">THU</span><img src="https://openweathermap.org/img/wn/11d.png"/><span class="dtemp">--</span></div>
+          <div class="day"><span class="dname">FRI</span><img src="https://openweathermap.org/img/wn/04d.png"/><span class="dtemp">--</span></div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <script>
+    document.getElementById("weatherForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const state = document.getElementById("stateInput").value.trim();
+      const region = document.getElementById("regionInput").value.trim();
+      const place = document.getElementById("placeInput").value.trim();
+
+      if (!state || !region || !place) {
+        alert("Please fill in all fields");
+        return;
+      }
+
+      const query = `${place}, ${region}, ${state}`;
+
+      const url = 'https://weatherapi-com.p.rapidapi.com/current.json?q=' + encodeURIComponent(query);
+      const options = {
+        method: 'GET',
+        headers: {
+          'x-rapidapi-key': '91492ec5fcmsh50e882349e886b1p1d21c6jsn232ddcf70475',
+          'x-rapidapi-host': 'weatherapi-com.p.rapidapi.com'
+        }
+      };
+
+      fetch(url, options)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          console.log(data);
+
+          document.querySelector(".city").innerText = `${data.location.name}, ${data.location.country}`;
+          document.querySelector(".temp-now").innerHTML = `${data.current.temp_c}<span class="unit">°C</span>`;
+          document.querySelector(".condition").innerText = data.current.condition.text;
+          document.querySelector(".big-icon").src = "https:" + data.current.condition.icon;
+          document.querySelector(".wind").innerText = data.current.wind_kph + " km/h";
+          document.querySelector(".pressure").innerText = data.current.pressure_mb  + " mb";
+          document.querySelector(".precip").innerText = data.current.precip_mm + " mm";
+        })
+        .catch(function (error) {
+          console.error("Error fetching data:", error);
+          alert("Could not fetch weather. Check input or try again.");
+        });
+    });
+  </script>
+
+</body>
+</html>
